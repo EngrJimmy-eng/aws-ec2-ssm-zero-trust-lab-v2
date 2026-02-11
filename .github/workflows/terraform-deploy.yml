@@ -25,15 +25,7 @@ jobs:
           cd terraform
           terraform init
 
-      - name: Import IAM Role
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: eu-west-1
-        run: |
-          cd terraform
-          terraform import aws_iam_role.ec2_ssm_role ec2-zero-trust-logging-ssm-role || true
-          terraform import aws_iam_instance_profile.this ec2-zero-trust-logging-instance-profile || true
+    
 
       - name: Terraform Apply
         env:
