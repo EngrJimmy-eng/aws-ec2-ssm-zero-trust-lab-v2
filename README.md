@@ -1,0 +1,1 @@
+# aws-ec2-ssm-zero-trust-lab-v2
