@@ -1,5 +1,5 @@
 resource "aws_iam_role" "ec2_ssm_role" {
-  name = "${var.project_name}-ssm-role"
+  name = "ec2-ssm-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -18,7 +18,7 @@ resource "aws_iam_role_policy_attachment" "ssm_core" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
-resource "aws_iam_instance_profile" "this" {
-  name = "${var.project_name}-instance-profile"
+resource "aws_iam_instance_profile" "ec2_profile" {
+  name = "ec2-ssm-instance-profile"
   role = aws_iam_role.ec2_ssm_role.name
 }
