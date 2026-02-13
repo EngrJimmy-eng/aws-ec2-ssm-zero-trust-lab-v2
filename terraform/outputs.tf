@@ -10,7 +10,7 @@ output "subnet_id" {
 
 output "instance_id" {
   description = "EC2 instance ID"
-  value       = aws_instance.this.id
+  value       = aws_instance.ec2_ssm.id
 }
 
 output "instance_public_ip" {
