@@ -15,7 +15,7 @@ output "instance_id" {
 
 output "instance_public_ip" {
   description = "EC2 public IP"
-  value       = aws_instance.this.public_ip
+  value       = aws_instance.this.public_ip_address
 }
 
 output "instance_profile_arn" {
