@@ -7,15 +7,12 @@ data "aws_ami" "amazon_linux_2" {
     name   = "name"
     values = ["amzn2-ami-hvm-*-x86_64-gp2"]
   }
-filter {
-  name   = "virtualization-type"
-  values = ["hvm"]
-}
+
 }
 
-resource "aws_security_group" "ec2" {
-  name   = "${var.project_name}-sg"
-  vpc_id = aws_vpc.this.id
+resource "aws_security_group" "ec2_sg" {
+  name   = "ec2-ssm-sg"
+  description = "Allow outbound traffic"
 
   # Zero Trust – no inbound rules
 
@@ -27,12 +24,13 @@ resource "aws_security_group" "ec2" {
   }
 }
 
-resource "aws_instance" "this" {
+resource "aws_instance" "ec2_ssm" {
   ami                    = data.aws_ami.amazon_linux_2.id
   instance_type          = "t3.micro"
-  subnet_id              = aws_subnet.public.id
+  
   vpc_security_group_ids = [aws_security_group.ec2.id]
-  iam_instance_profile   = aws_iam_instance_profile.this.name
+  iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
+  associate_public_ip_address = true
 
   metadata_options {
     http_endpoint = "enabled"
@@ -40,6 +38,7 @@ resource "aws_instance" "this" {
   }
 
   tags = {
-    Name = "${var.project_name}-ec2"
+    Name = "Terraform-SSM-Instance"
+  
   }
 }
