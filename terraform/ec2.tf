@@ -27,20 +27,19 @@ resource "aws_security_group" "ec2_sg" {
 }
 
 resource "aws_instance" "ec2_ssm" {
-  ami                    = data.aws_ami.amazon_linux_2.id
-  instance_type          = "t3.micro"
-  
-  vpc_security_group_ids = [aws_security_group.ec2_sg.id]
-  iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
+  ami                         = data.aws_ami.amazon_linux.id
+  instance_type               = "t3.micro"
+  subnet_id                   = aws_subnet.public.id
+  vpc_security_group_ids      = [aws_security_group.ec2_sg.id]
+  iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
   associate_public_ip_address = true
 
   metadata_options {
     http_endpoint = "enabled"
-    http_tokens   = "required"   # IMDSv2 required (important for SSM)
+    http_tokens   = "required"
   }
 
   tags = {
-    Name = "Terraform-SSM-Instance"
-  
+    Name = "${var.project_name}-ec2"
   }
 }
