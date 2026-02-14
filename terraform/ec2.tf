@@ -13,6 +13,8 @@ data "aws_ami" "amazon_linux_2" {
 resource "aws_security_group" "ec2_sg" {
   name   = "ec2-ssm-sg"
   description = "Allow outbound traffic"
+  vpc_id = aws_vpc.this.id
+
 
   # Zero Trust – no inbound rules
 
