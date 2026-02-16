@@ -23,8 +23,8 @@ resource "aws_iam_instance_profile" "ec2_profile" {
   role = aws_iam_role.ec2_ssm_role.name
 }
 
-resource "aws_iam_role" "firehose_role" {
-  name = "firehose_to_s3_role"
+resource "aws_iam_role" "cw_logs_role" {
+  name = "cw-logs-to-firehose-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -32,7 +32,7 @@ resource "aws_iam_role" "firehose_role" {
       {
         Effect = "Allow"
         Principal = {
-          Service = "firehose.amazonaws.com"
+          Service = "logs.amazonaws.com"
         }
         Action = "sts:AssumeRole"
       }
@@ -40,26 +40,19 @@ resource "aws_iam_role" "firehose_role" {
   })
 }
 
-resource "aws_iam_role_policy" "firehose_policy" {
-  role = aws_iam_role.firehose_role.id
+resource "aws_iam_role_policy" "cw_logs_policy" {
+  name = "cw-logs-policy"
+  role = aws_iam_role.cw_logs_role.id
 
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Effect = "Allow"
-        Action = [
-          "s3:PutObject",
-          "s3:PutObjectAcl",
-          "s3:ListBucket"
-        ]
-        Resource = [
-          aws_s3_bucket.log_archive.arn,
-          "${aws_s3_bucket.log_archive.arn}/*"
-        ]
+        Effect   = "Allow"
+        Action   = "firehose:PutRecord"
+        Resource = aws_kinesis_firehose_delivery_stream.cw_to_s3.arn
       }
     ]
   })
 }
-
 
