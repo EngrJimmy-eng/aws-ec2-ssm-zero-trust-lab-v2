@@ -34,6 +34,8 @@ resource "aws_instance" "ec2_ssm" {
   
   iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
   associate_public_ip_address = true
+subnet_id = aws_subnet.private.id
+associate_public_ip_address = false
 
   metadata_options {
     http_endpoint = "enabled"
