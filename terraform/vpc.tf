@@ -104,7 +104,7 @@ resource "aws_security_group" "vpc_endpoints_sg" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = [var.vpc_cidr]
+    security_groups = [aws_security_group.ec2_sg.id]
   }
 
   egress {
