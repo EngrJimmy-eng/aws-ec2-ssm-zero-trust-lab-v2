@@ -29,11 +29,11 @@ resource "aws_security_group" "ec2_sg" {
 resource "aws_instance" "ec2_ssm" {
   ami                         = data.aws_ami.amazon_linux.id
   instance_type               = "t3.micro"
-  subnet_id                   = aws_subnet.public.id
+       
   vpc_security_group_ids      = [aws_security_group.ec2_sg.id]
   
   iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
-  associate_public_ip_address = true
+  
 subnet_id = aws_subnet.private.id
 associate_public_ip_address = false
 
