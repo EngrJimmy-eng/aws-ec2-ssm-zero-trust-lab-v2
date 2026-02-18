@@ -169,3 +169,15 @@ resource "aws_vpc_endpoint" "ssmmessages" {
     Name = "${var.project_name}-ssmmessages-endpoint"
   }
 }
+resource "aws_vpc_endpoint" "logs" {
+  vpc_id              = aws_vpc.this.id
+  service_name        = "com.amazonaws.eu-west-1.logs"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = [aws_subnet.private.id]
+  security_group_ids  = [aws_security_group.vpc_endpoints_sg.id]
+  private_dns_enabled = true
+
+  tags = {
+    Name = "${var.project_name}-logs-endpoint"
+  }
+}
