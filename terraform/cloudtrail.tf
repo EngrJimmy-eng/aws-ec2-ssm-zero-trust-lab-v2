@@ -25,7 +25,7 @@ resource "aws_s3_bucket_versioning" "cloudtrail_versioning" {
   bucket = aws_s3_bucket.cloudtrail_logs.id
 
   versioning_configuration {
-    status = "Enabled"
+    status = "Disable"
   }
 }
 
