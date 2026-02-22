@@ -114,3 +114,20 @@ resource "aws_s3_bucket_policy" "secure_policy" {
     ]
   })
 }
+
+resource "aws_s3_bucket_policy" "deny_delete_objects" {
+  bucket = aws_s3_bucket.secure_bucket.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid = "DenyDeleteObjects"
+        Effect = "Deny"
+        Principal = "*"
+        Action = "s3:DeleteObject"
+        Resource = "${aws_s3_bucket.secure_bucket.arn}/*"
+      }
+    ]
+  })
+}
