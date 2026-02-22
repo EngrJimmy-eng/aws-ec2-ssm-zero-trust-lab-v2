@@ -3,9 +3,7 @@
 # Project: Zero Trust Lab
 
 
-variable "project_name" {
-  default = "ec2-zero-trust-logging"
-}
+
 
 variable "ec2_role_arn" {
   description = "IAM Role ARN allowed to access the bucket"
@@ -147,27 +145,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "secure_lifecycle" {
 }
 
 
-# CloudTrail Data Event for S3
 
-resource "aws_cloudtrail" "main" {
-  name                          = "${var.project_name}-cloudtrail"
-  s3_bucket_name                = aws_s3_bucket.secure_logs_bucket.bucket
-  include_global_service_events = true
-  is_multi_region_trail         = true
-  enable_logging                = true
-
-  event_selector {
-    read_write_type           = "All"
-    include_management_events = true
-
-    data_resource {
-      type = "AWS::S3::Object"
-      values = [
-        "${aws_s3_bucket.secure_bucket.arn}/"
-      ]
-    }
-  }
-}
 
 
 # CloudWatch Alert for Policy Change
