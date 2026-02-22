@@ -5,7 +5,7 @@
 
 
 
-variable "ec2_role_arn" {
+variable "ec2_ssm_role_arn" {
   description = "IAM Role ARN allowed to access the bucket"
 }
 
@@ -55,7 +55,7 @@ resource "aws_s3_bucket_policy" "secure_policy" {
       {
         Sid       = "AllowEC2Role"
         Effect    = "Allow"
-        Principal = { AWS = var.ec2_role_arn }
+        Principal = { AWS = var.ec2_ssm_role_arn }
         Action    = "s3:*"
         Resource  = [
           aws_s3_bucket.secure_bucket.arn,
