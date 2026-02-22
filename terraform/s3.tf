@@ -61,7 +61,9 @@ resource "aws_s3_bucket_policy" "secure_policy" {
     Version = "2012-10-17"
     Statement = [
 
-      # 🔒 Deny non-HTTPS requests
+      
+      # 🔒 Deny Non-HTTPS Requests
+      
       {
         Sid = "DenyInsecureTransport"
         Effect = "Deny"
@@ -78,7 +80,9 @@ resource "aws_s3_bucket_policy" "secure_policy" {
         }
       },
 
-      # 🔒 Deny unencrypted uploads
+      
+      # 🔒 Deny Unencrypted Uploads
+      
       {
         Sid = "DenyUnEncryptedObjectUploads"
         Effect = "Deny"
@@ -90,6 +94,22 @@ resource "aws_s3_bucket_policy" "secure_policy" {
             "s3:x-amz-server-side-encryption" = "AES256"
           }
         }
+      },
+
+      
+      # ✅ Allow ONLY EC2 IAM Role
+      
+      {
+        Sid = "AllowEC2RoleAccess"
+        Effect = "Allow"
+        Principal = {
+          AWS = aws_iam_role.ec2_role.arn
+        }
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject"
+        ]
+        Resource = "${aws_s3_bucket.secure_bucket.arn}/*"
       }
     ]
   })
