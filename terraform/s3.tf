@@ -132,11 +132,19 @@ resource "aws_s3_bucket_policy" "deny_delete_objects" {
   })
 }
 
+# Logs Bucket (no ACL)
 resource "aws_s3_bucket" "secure_logs_bucket" {
   bucket = "${var.project_name}-secure-logs"
-  acl    = "log-delivery-write"
+
+  # Use Object Ownership enforced
+  object_ownership = "BucketOwnerEnforced"
+
+  tags = {
+    Name = "${var.project_name}-secure-logs-bucket"
+  }
 }
 
+# Enable logging on main bucket
 resource "aws_s3_bucket_logging" "bucket_logging" {
   bucket = aws_s3_bucket.secure_bucket.id
 
