@@ -103,7 +103,7 @@ resource "aws_s3_bucket_policy" "secure_policy" {
         Sid = "AllowEC2RoleAccess"
         Effect = "Allow"
         Principal = {
-          AWS = aws_iam_role.ec2_role.arn
+          AWS = aws_iam_role.ec2_ssm_role.arn
         }
         Action = [
           "s3:GetObject",
