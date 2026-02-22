@@ -132,12 +132,9 @@ resource "aws_s3_bucket_policy" "deny_delete_objects" {
   })
 }
 
-# Logs Bucket (no ACL)
+# Logs Bucket (no ACL, no object_ownership)
 resource "aws_s3_bucket" "secure_logs_bucket" {
   bucket = "${var.project_name}-secure-logs"
-
-  # Use Object Ownership enforced
-  object_ownership = "BucketOwnerEnforced"
 
   tags = {
     Name = "${var.project_name}-secure-logs-bucket"
