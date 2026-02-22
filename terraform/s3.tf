@@ -1,7 +1,7 @@
-##############################
+
 # Hardened S3 Bucket Setup
 # Project: Zero Trust Lab
-##############################
+
 
 variable "project_name" {
   default = "ec2-zero-trust-logging"
@@ -11,9 +11,9 @@ variable "ec2_role_arn" {
   description = "IAM Role ARN allowed to access the bucket"
 }
 
-#################################
+
 # Account-level Public Access Block
-#################################
+
 resource "aws_s3_account_public_access_block" "account_block" {
   block_public_acls       = true
   ignore_public_acls      = true
@@ -21,9 +21,9 @@ resource "aws_s3_account_public_access_block" "account_block" {
   restrict_public_buckets = true
 }
 
-######################
+
 # Main Secure Bucket
-######################
+
 resource "aws_s3_bucket" "secure_bucket" {
   bucket = "${var.project_name}-secure-bucket"
 
@@ -44,9 +44,9 @@ resource "aws_s3_bucket" "secure_bucket" {
   }
 }
 
-#########################
+
 # S3 Bucket Policy
-#########################
+
 resource "aws_s3_bucket_policy" "secure_policy" {
   bucket = aws_s3_bucket.secure_bucket.id
 
@@ -106,9 +106,9 @@ resource "aws_s3_bucket_policy" "secure_policy" {
   })
 }
 
-##################################
+
 # Server Access Logging Bucket
-##################################
+
 resource "aws_s3_bucket" "secure_logs_bucket" {
   bucket = "${var.project_name}-secure-logs"
 
@@ -123,9 +123,9 @@ resource "aws_s3_bucket_logging" "bucket_logging" {
   target_prefix = "access-logs/"
 }
 
-######################
+
 # Lifecycle Rule
-######################
+
 resource "aws_s3_bucket_lifecycle_configuration" "secure_lifecycle" {
   bucket = aws_s3_bucket.secure_bucket.id
 
@@ -146,9 +146,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "secure_lifecycle" {
   }
 }
 
-#################################
+
 # CloudTrail Data Event for S3
-#################################
+
 resource "aws_cloudtrail" "main" {
   name                          = "${var.project_name}-cloudtrail"
   s3_bucket_name                = aws_s3_bucket.secure_logs_bucket.bucket
@@ -169,9 +169,9 @@ resource "aws_cloudtrail" "main" {
   }
 }
 
-#################################
+
 # CloudWatch Alert for Policy Change
-#################################
+
 resource "aws_cloudwatch_log_metric_filter" "bucket_policy_change" {
   name           = "BucketPolicyChange"
   log_group_name = "/aws/cloudtrail/${var.project_name}-cloudtrail-logs"
