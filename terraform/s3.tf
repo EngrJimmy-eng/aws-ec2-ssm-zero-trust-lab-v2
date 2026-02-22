@@ -5,9 +5,6 @@
 
 
 
-variable "ec2_ssm_role_arn" {
-  description = "IAM Role ARN allowed to access the bucket"
-}
 
 
 # Account-level Public Access Block
