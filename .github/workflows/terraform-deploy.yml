@@ -23,7 +23,7 @@ jobs:
           AWS_DEFAULT_REGION: eu-west-1
         run: |
           cd terraform
-          terraform init
+          terraform init -upgrade
 
       - name: Terraform Plan
         env:
