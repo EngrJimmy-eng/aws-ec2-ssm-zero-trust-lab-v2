@@ -170,17 +170,18 @@ resource "aws_cloudwatch_log_metric_filter" "bucket_policy_change" {
   }
 }
 
-resource "aws_cloudwatch_alarm" "bucket_policy_alarm" {
-  alarm_name          = "${var.project_name}-bucket-policy-change-alarm"
-  comparison_operator = "GreaterThanOrEqualToThreshold"
+resource "aws_cloudwatch_metric_alarm" "bucket_policy_alarm" {
+  alarm_name          = "s3-bucket-policy-change"
+  comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 1
-  metric_name         = aws_cloudwatch_log_metric_filter.bucket_policy_change.metric_transformation[0].name
-  namespace           = aws_cloudwatch_log_metric_filter.bucket_policy_change.metric_transformation[0].namespace
-  period              = 60
-  statistic           = "Sum"
+  metric_name         = "NumberOfObjects"
+  namespace           = "AWS/S3"
+  period              = 300
+  statistic           = "Average"
   threshold           = 1
+  alarm_description   = "Alert if bucket policy changes"
+  actions_enabled     = true
 
-  alarm_description = "Alarm if S3 bucket policy is changed."
-  actions_enabled   = true
-  alarm_actions     = [aws_sns_topic.secure_alerts.arn]
+  # Optional SNS topic to notify:
+  # alarm_actions = [aws_sns_topic.security_alerts.arn]
 }
