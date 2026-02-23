@@ -7,9 +7,20 @@ jobs:
   terraform-deploy:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: terraform
+
     steps:
-      - name: Checkout repo
+      - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -17,36 +28,13 @@ jobs:
           terraform_version: 1.5.0
 
       - name: Terraform Init
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: eu-west-1
-        run: |
-          cd terraform
-          terraform init -upgrade
+        run: terraform init -upgrade
 
-          
-
-      - name: Terraform Providers
-        run: |
-          cd terraform
-          terraform providers
-  
+      - name: Terraform Validate
+        run: terraform validate
 
       - name: Terraform Plan
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: eu-west-1
-        run: |
-          cd terraform
-          terraform plan -input=false
+        run: terraform plan -input=false
 
       - name: Terraform Apply
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: eu-west-1
-        run: |
-          cd terraform
-          terraform apply -auto-approve -input=false
+        run: terraform apply -auto-approve -input=false
