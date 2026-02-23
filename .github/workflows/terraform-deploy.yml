@@ -30,6 +30,12 @@ jobs:
       - name: Terraform Init
         run: terraform init -upgrade
 
+      - name: Show Terraform Version
+        run: terraform version
+
+      - name: Show Installed Providers
+        run: terraform providers
+
       - name: Terraform Validate
         run: terraform validate
 
