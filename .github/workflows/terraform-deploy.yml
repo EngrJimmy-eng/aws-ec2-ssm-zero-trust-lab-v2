@@ -1,4 +1,4 @@
-name: Terraform Deploy Zero Trust Lab
+Terraform Deploy Zero Trust Lab
 
 on:
   workflow_dispatch:
@@ -44,3 +44,4 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -auto-approve -input=false
+        
