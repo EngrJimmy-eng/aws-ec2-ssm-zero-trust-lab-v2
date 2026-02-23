@@ -24,14 +24,6 @@ resource "aws_s3_bucket" "secure_bucket" {
 
   
 
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
-
   tags = {
     Name = "${var.project_name}-secure-bucket"
   }
@@ -42,6 +34,16 @@ resource "aws_s3_bucket_versioning" "secure_bucket_versioning" {
 
   versioning_configuration {
     status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "secure_bucket_sse" {
+  bucket = aws_s3_bucket.secure_bucket.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
   }
 }
 
