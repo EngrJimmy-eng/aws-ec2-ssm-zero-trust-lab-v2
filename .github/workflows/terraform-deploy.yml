@@ -25,6 +25,14 @@ jobs:
           cd terraform
           terraform init -upgrade
 
+          
+
+      - name: Terraform Providers
+        run: |
+          cd terraform
+          terraform providers
+  
+
       - name: Terraform Plan
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
