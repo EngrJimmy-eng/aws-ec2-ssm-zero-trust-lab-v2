@@ -22,9 +22,7 @@ resource "aws_s3_account_public_access_block" "account_block" {
 resource "aws_s3_bucket" "secure_bucket" {
   bucket = "${var.project_name}-secure-bucket"
 
-  versioning {
-    enabled = true
-  }
+  
 
   server_side_encryption_configuration {
     rule {
@@ -36,6 +34,14 @@ resource "aws_s3_bucket" "secure_bucket" {
 
   tags = {
     Name = "${var.project_name}-secure-bucket"
+  }
+}
+
+resource "aws_s3_bucket_versioning" "secure_bucket_versioning" {
+  bucket = aws_s3_bucket.secure_bucket.id
+
+  versioning_configuration {
+    status = "Enabled"
   }
 }
 
@@ -52,7 +58,9 @@ resource "aws_s3_bucket_policy" "secure_policy" {
       {
         Sid       = "AllowEC2Role"
         Effect    = "Allow"
-        Principal = { AWS = var.ec2_ssm_role_arn }
+        Principal = {
+  AWS = aws_iam_role.ec2_ssm_role.arn
+}
         Action    = "s3:*"
         Resource  = [
           aws_s3_bucket.secure_bucket.arn,
