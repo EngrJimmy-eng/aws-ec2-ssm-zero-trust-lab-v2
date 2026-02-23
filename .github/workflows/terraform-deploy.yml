@@ -32,6 +32,11 @@ jobs:
           rm -rf .terraform
           rm -f terraform.tfstate terraform.tfstate.backup
 
+          - name: Clean Terraform
+            run: |
+              rm -rf .terraform
+              rm -f terraform.tfstate terraform.tfstate.backup
+
       - name: Terraform Init
         run: terraform init -upgrade
 
