@@ -1,4 +1,4 @@
-Terraform Deploy Zero Trust Lab
+name: Terraform Deploy Zero Trust Lab
 
 on:
   workflow_dispatch:
@@ -27,14 +27,13 @@ jobs:
         with:
           terraform_version: 1.5.0
 
+      - name: Clean Terraform
+        run: |
+          rm -rf .terraform
+          rm -f terraform.tfstate terraform.tfstate.backup
+
       - name: Terraform Init
         run: terraform init -upgrade
-
-      - name: Show Terraform Version
-        run: terraform version
-
-      - name: Show Installed Providers
-        run: terraform providers
 
       - name: Terraform Validate
         run: terraform validate
@@ -44,4 +43,3 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -auto-approve -input=false
-        
