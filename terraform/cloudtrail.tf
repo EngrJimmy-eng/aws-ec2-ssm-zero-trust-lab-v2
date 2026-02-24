@@ -72,9 +72,22 @@ resource "aws_s3_bucket_policy" "cloudtrail_policy" {
   })
 }
 
-data "aws_caller_identity" "current" {}
-
 resource "aws_cloudwatch_log_group" "cloudtrail_logs" {
   name              = "/aws/cloudtrail/zero-trust"
   retention_in_days = 1
 }
+
+resource "aws_cloudwatch_log_metric_filter" "bucket_policy_change" {
+  name           = "s3-bucket-policy-change"
+  log_group_name = aws_cloudwatch_log_group.cloudtrail_logs.name
+  pattern        = "{ ($.eventName = PutBucketPolicy) }"
+
+  metric_transformation {
+    name      = "BucketPolicyChange"
+    namespace = "ZeroTrustLab"
+    value     = "1"
+  }
+}
+
+data "aws_caller_identity" "current" {}
+
