@@ -73,3 +73,8 @@ resource "aws_s3_bucket_policy" "cloudtrail_policy" {
 }
 
 data "aws_caller_identity" "current" {}
+
+resource "aws_cloudwatch_log_group" "cloudtrail_logs" {
+  name              = "/aws/cloudtrail/zero-trust"
+  retention_in_days = 1
+}
