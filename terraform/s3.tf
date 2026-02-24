@@ -112,21 +112,9 @@ resource "aws_s3_bucket_policy" "secure_policy" {
 }
 
 
-# Server Access Logging Bucket
 
-resource "aws_s3_bucket" "secure_logs_bucket" {
-  bucket = "${var.project_name}-secure-logs"
 
-  tags = {
-    Name = "${var.project_name}-secure-logs-bucket"
-  }
-}
 
-resource "aws_s3_bucket_logging" "bucket_logging" {
-  bucket        = aws_s3_bucket.secure_bucket.id
-  target_bucket = aws_s3_bucket.secure_logs_bucket.id
-  target_prefix = "access-logs/"
-}
 
 
 # Lifecycle Rule
@@ -143,10 +131,49 @@ resource "aws_s3_bucket_lifecycle_configuration" "secure_lifecycle" {
     
 
     expiration {
-      days = 365
+      days = 3
     }
   }
 }
+
+resource "aws_s3_bucket_logging" "bucket_logging" {
+  bucket        = aws_s3_bucket.secure_bucket.id
+  target_bucket = aws_s3_bucket.secure_logs_bucket.id
+  target_prefix = "access-logs/"
+}
+
+# Server Access Logging Bucket
+
+resource "aws_s3_bucket" "secure_logs_bucket" {
+  bucket = "${var.project_name}-secure-logs"
+
+  tags = {
+    Name = "${var.project_name}-secure-logs-bucket"
+  }
+}
+
+resource "aws_s3_bucket_versioning" "secure_logs_versioning" {
+  bucket = aws_s3_bucket.secure_logs.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "secure_logs_lifecycle" {
+  bucket = aws_s3_bucket.secure_logs.id
+
+  rule {
+    id     = "log-retention"
+    status = "Enabled"
+
+    expiration {
+      days = 3
+    }
+  }
+}
+
+
 
 
 
