@@ -155,33 +155,4 @@ resource "aws_s3_bucket_lifecycle_configuration" "secure_lifecycle" {
 
 
 
-# CloudWatch Alert for Policy Change
 
-resource "aws_cloudwatch_log_metric_filter" "bucket_policy_change" {
-  name           = "BucketPolicyChange"
-  log_group_name = "/aws/cloudtrail/${var.project_name}-cloudtrail-logs"
-
-  pattern = "{ ($.eventName = PutBucketPolicy) || ($.eventName = DeleteBucketPolicy) }"
-
-  metric_transformation {
-    name      = "BucketPolicyChange"
-    namespace = "S3Security"
-    value     = "1"
-  }
-}
-
-resource "aws_cloudwatch_metric_alarm" "bucket_policy_alarm" {
-  alarm_name          = "s3-bucket-policy-change"
-  comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 1
-  metric_name         = "NumberOfObjects"
-  namespace           = "AWS/S3"
-  period              = 300
-  statistic           = "Average"
-  threshold           = 1
-  alarm_description   = "Alert if bucket policy changes"
-  actions_enabled     = true
-
-  # Optional SNS topic to notify:
-  # alarm_actions = [aws_sns_topic.security_alerts.arn]
-}
