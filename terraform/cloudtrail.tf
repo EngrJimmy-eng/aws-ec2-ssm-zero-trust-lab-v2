@@ -89,5 +89,21 @@ resource "aws_cloudwatch_log_metric_filter" "bucket_policy_change" {
   }
 }
 
+resource "aws_cloudwatch_metric_alarm" "bucket_policy_alarm" {
+  alarm_name          = "s3-bucket-policy-change"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = 1
+  metric_name         = "BucketPolicyChange"
+  namespace           = "ZeroTrustLab"
+  period              = 60
+  statistic           = "Sum"
+  threshold           = 1
+  alarm_description   = "Triggered when S3 bucket policy is changed"
+
+  depends_on = [
+    aws_cloudwatch_log_metric_filter.bucket_policy_change
+  ]
+}
+
 data "aws_caller_identity" "current" {}
 
