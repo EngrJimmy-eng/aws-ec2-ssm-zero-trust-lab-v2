@@ -153,7 +153,7 @@ resource "aws_s3_bucket" "secure_logs_bucket" {
 }
 
 resource "aws_s3_bucket_versioning" "secure_logs_versioning" {
-  bucket = aws_s3_bucket.secure_logs.id
+  bucket = aws_s3_bucket.secure_logs_bucket.id
 
   versioning_configuration {
     status = "Enabled"
@@ -161,7 +161,7 @@ resource "aws_s3_bucket_versioning" "secure_logs_versioning" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "secure_logs_lifecycle" {
-  bucket = aws_s3_bucket.secure_logs.id
+  bucket = aws_s3_bucket.secure_logs_bucket.id
 
   rule {
     id     = "log-retention"
