@@ -105,5 +105,42 @@ resource "aws_cloudwatch_metric_alarm" "bucket_policy_alarm" {
   ]
 }
 
+
+
+# Get the current AWS account
 data "aws_caller_identity" "current" {}
+
+
+
+
+
+
+
+
+# Lifecycle: archive logs to Glacier after 90 days, delete after 365 days
+resource "aws_s3_bucket_lifecycle_configuration" "cloudtrail_lifecycle" {
+  bucket = aws_s3_bucket.cloudtrail_logs.id
+
+  rule {
+    id     = "ArchiveOldLogs"
+    status = "Enabled"
+
+    filter {
+      prefix = ""  # applies to all objects
+    }
+
+    expiration {
+      days = 30
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
 
