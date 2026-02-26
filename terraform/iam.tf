@@ -46,5 +46,22 @@ resource "aws_iam_role_policy_attachment" "ec2_s3_attach" {
   policy_arn = aws_iam_policy.ec2_s3_limited.arn
 }
 
+resource "aws_iam_role" "cloudtrail_cloudwatch_role" {
+  name = "${var.project_name}-cloudtrail-cloudwatch-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "cloudtrail.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
 
 
