@@ -194,6 +194,67 @@ resource "aws_s3_bucket_lifecycle_configuration" "cloudtrail_lifecycle" {
   }
 }
 
+resource "aws_cloudwatch_log_metric_filter" "iam_privilege_escalation" {
+  name           = "IAMPrivilegeEscalation"
+  log_group_name = aws_cloudwatch_log_group.cloudtrail_logs.name
+  pattern        = "{ ($.eventName = AttachUserPolicy) || ($.eventName = AttachRolePolicy) || ($.eventName = PutUserPolicy) || ($.eventName = PutRolePolicy) }"
+
+  metric_transformation {
+    name      = "IAMPrivilegeEscalation"
+    namespace = "ZeroTrustLab"
+    value     = "1"
+  }
+}
+
+resource "aws_cloudwatch_log_metric_filter" "failed_console_login" {
+  name           = "FailedConsoleLogin"
+  log_group_name = aws_cloudwatch_log_group.cloudtrail_logs.name
+  pattern        = "{ $.eventName = \"ConsoleLogin\" && $.errorMessage = \"Failed authentication\" }"
+
+  metric_transformation {
+    name      = "FailedLogin"
+    namespace = "ZeroTrustLab"
+    value     = "1"
+  }
+}
+
+resource "aws_cloudwatch_log_metric_filter" "root_api_calls" {
+  name           = "RootAPICalls"
+  log_group_name = aws_cloudwatch_log_group.cloudtrail_logs.name
+  pattern        = "{ $.userIdentity.type = \"Root\" }"
+
+  metric_transformation {
+    name      = "RootAPICall"
+    namespace = "ZeroTrustLab"
+    value     = "1"
+  }
+}
+
+resource "aws_cloudwatch_log_metric_filter" "sg_changes" {
+  name           = "SecurityGroupChanges"
+  log_group_name = aws_cloudwatch_log_group.cloudtrail_logs.name
+  pattern        = "{ ($.eventName = \"AuthorizeSecurityGroupIngress\") || ($.eventName = \"AuthorizeSecurityGroupEgress\") || ($.eventName = \"RevokeSecurityGroupIngress\") || ($.eventName = \"RevokeSecurityGroupEgress\") }"
+
+  metric_transformation {
+    name      = "SecurityGroupChange"
+    namespace = "ZeroTrustLab"
+    value     = "1"
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "iam_escalation_alarm" {
+  alarm_name          = "IAMPrivilegeEscalationAlarm"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = 1
+  metric_name         = "IAMPrivilegeEscalation"
+  namespace           = "ZeroTrustLab"
+  period              = 60
+  statistic           = "Sum"
+  threshold           = 1
+}
+
+
+
 
 
 
