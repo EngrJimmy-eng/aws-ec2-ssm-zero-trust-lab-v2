@@ -77,6 +77,65 @@ resource "aws_cloudwatch_log_group" "cloudtrail_logs" {
   retention_in_days = 1
 }
 
+resource "aws_cloudwatch_log_metric_filter" "root_login" {
+  name           = "RootLoginDetected"
+  log_group_name = aws_cloudwatch_log_group.cloudtrail_logs.name
+  pattern        = "{ $.userIdentity.type = \"Root\" && $.eventName = \"ConsoleLogin\" }"
+
+  metric_transformation {
+    name      = "RootLogin"
+    namespace = "ZeroTrustLab"
+    value     = "1"
+  }
+}
+
+resource "aws_cloudwatch_log_metric_filter" "stop_logging" {
+  name           = "CloudTrailStopped"
+  log_group_name = aws_cloudwatch_log_group.cloudtrail_logs.name
+  pattern        = "{ $.eventName = StopLogging }"
+
+  metric_transformation {
+    name      = "CloudTrailStopped"
+    namespace = "ZeroTrustLab"
+    value     = "1"
+  }
+}
+
+resource "aws_cloudwatch_log_metric_filter" "iam_escalation" {
+  name           = "IAMPrivilegeEscalation"
+  log_group_name = aws_cloudwatch_log_group.cloudtrail_logs.name
+  pattern        = "{ ($.eventName = AttachUserPolicy) || ($.eventName = AttachRolePolicy) || ($.eventName = PutUserPolicy) || ($.eventName = PutRolePolicy) }"
+
+  metric_transformation {
+    name      = "IAMPrivilegeEscalation"
+    namespace = "ZeroTrustLab"
+    value     = "1"
+  }
+}
+
+resource "aws_cloudwatch_log_metric_filter" "s3_public_policy" {
+  name           = "S3PublicPolicyChange"
+  log_group_name = aws_cloudwatch_log_group.cloudtrail_logs.name
+  pattern        = "{ $.eventName = PutBucketPolicy }"
+
+  metric_transformation {
+    name      = "S3PublicPolicyChange"
+    namespace = "ZeroTrustLab"
+    value     = "1"
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "security_alarm" {
+  alarm_name          = "SecurityAlert"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = 1
+  metric_name         = "RootLogin"
+  namespace           = "ZeroTrustLab"
+  period              = 20
+  statistic           = "Sum"
+  threshold           = 1
+}
+
 resource "aws_cloudwatch_log_metric_filter" "bucket_policy_change" {
   name           = "s3-bucket-policy-change"
   log_group_name = aws_cloudwatch_log_group.cloudtrail_logs.name
