@@ -63,5 +63,24 @@ resource "aws_iam_role" "cloudtrail_cloudwatch_role" {
   })
 }
 
+resource "aws_iam_role_policy" "cloudtrail_cloudwatch_policy" {
+  name = "${var.project_name}-cloudtrail-cloudwatch-policy"
+  role = aws_iam_role.cloudtrail_cloudwatch_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = "${aws_cloudwatch_log_group.cloudtrail_logs.arn}:*"
+      }
+    ]
+  })
+}
+
 
 
