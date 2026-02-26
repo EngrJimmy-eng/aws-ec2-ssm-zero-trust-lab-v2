@@ -134,6 +134,7 @@ resource "aws_cloudwatch_metric_alarm" "security_alarm" {
   period              = 20
   statistic           = "Sum"
   threshold           = 1
+  treat_missing_data = "breaching"
 
   alarm_actions = [aws_sns_topic.security_alerts.arn]
 }
