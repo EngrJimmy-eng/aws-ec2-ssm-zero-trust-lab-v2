@@ -284,6 +284,44 @@ resource "aws_cloudwatch_log_metric_filter" "s3_object_access" {
   }
 }
 
+resource "aws_cloudwatch_metric_alarm" "s3_object_access_alarm" {
+  alarm_name          = "S3ObjectAccessDetected"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = 1
+  metric_name         = "S3ObjectAccess"
+  namespace           = "ZeroTrustLab"
+  period              = 60
+  statistic           = "Sum"
+  threshold           = 1
+
+  alarm_actions = [aws_sns_topic.security_alerts.arn]
+}
+
+resource "aws_cloudwatch_log_metric_filter" "iam_policy_change" {
+  name           = "IAMPolicyChange"
+  log_group_name = aws_cloudwatch_log_group.cloudtrail_logs.name
+  pattern        = "{ ($.eventName = PutRolePolicy) || ($.eventName = AttachRolePolicy) }"
+
+  metric_transformation {
+    name      = "IAMPolicyChange"
+    namespace = "ZeroTrustLab"
+    value     = "1"
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "iam_policy_change_alarm" {
+  alarm_name          = "IAMPolicyChangeDetected"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods  = 1
+  metric_name         = "IAMPolicyChange"
+  namespace           = "ZeroTrustLab"
+  period              = 60
+  statistic           = "Sum"
+  threshold           = 1
+
+  alarm_actions = [aws_sns_topic.security_alerts.arn]
+}
+
 
 
 
