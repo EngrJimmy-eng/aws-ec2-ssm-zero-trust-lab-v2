@@ -1,7 +1,7 @@
 
 
 
-resource "aws_vpc" "this" {
+resource "aws_vpc" "zero_trust_lab" {
   cidr_block           = var.vpc_cidr
   enable_dns_support   = true
   enable_dns_hostnames = true
@@ -16,7 +16,7 @@ resource "aws_vpc" "this" {
 
 
 resource "aws_subnet" "public" {
-  vpc_id                  = aws_vpc.this.id
+  vpc_id                  = aws_vpc.zero_trust_lab.id
   cidr_block              = var.public_subnet_cidr
   map_public_ip_on_launch = true
 
@@ -30,7 +30,7 @@ resource "aws_subnet" "public" {
 
 
 resource "aws_subnet" "private" {
-  vpc_id                  = aws_vpc.this.id
+  vpc_id                  = aws_vpc.zero_trust_lab.id
   cidr_block              = "10.0.2.0/24"
   map_public_ip_on_launch = false
 
@@ -43,8 +43,8 @@ resource "aws_subnet" "private" {
 # Internet Gateway
 
 
-resource "aws_internet_gateway" "this" {
-  vpc_id = aws_vpc.this.id
+resource "aws_internet_gateway" "gateway" {
+  vpc_id = aws_vpc.zero_trust_lab.id
 
   tags = {
     Name = "${var.project_name}-igw"
@@ -56,11 +56,11 @@ resource "aws_internet_gateway" "this" {
 
 
 resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.this.id
+  vpc_id = aws_vpc.zero_trust_lab.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.this.id
+    gateway_id = aws_internet_gateway.zero_trust_lab.id
   }
 
   tags = {
@@ -78,7 +78,7 @@ resource "aws_route_table_association" "public_assoc" {
 
 
 resource "aws_route_table" "private" {
-  vpc_id = aws_vpc.this.id
+  vpc_id = aws_vpc.zero_trust_lab.id
 
   tags = {
     Name = "${var.project_name}-private-rt"
@@ -97,7 +97,7 @@ resource "aws_route_table_association" "private_assoc" {
 resource "aws_security_group" "vpc_endpoints_sg" {
   name        = "${var.project_name}-vpc-endpoints-sg"
   description = "Allow HTTPS from VPC to VPC Endpoints"
-  vpc_id      = aws_vpc.this.id
+  vpc_id      = aws_vpc.zero_trust_lab.id
 
   ingress {
     description = "Allow HTTPS from VPC"
@@ -124,7 +124,7 @@ resource "aws_security_group" "vpc_endpoints_sg" {
 
 
 resource "aws_vpc_endpoint" "ssm" {
-  vpc_id              = aws_vpc.this.id
+  vpc_id              = aws_vpc.zero_trust_lab.id
   service_name        = "com.amazonaws.eu-west-1.ssm"
   vpc_endpoint_type   = "Interface"
   subnet_ids          = [aws_subnet.private.id]
@@ -141,7 +141,7 @@ resource "aws_vpc_endpoint" "ssm" {
 
 
 resource "aws_vpc_endpoint" "ec2messages" {
-  vpc_id              = aws_vpc.this.id
+  vpc_id              = aws_vpc.zero_trust_lab.id
   service_name        = "com.amazonaws.eu-west-1.ec2messages"
   vpc_endpoint_type   = "Interface"
   subnet_ids          = [aws_subnet.private.id]
@@ -158,7 +158,7 @@ resource "aws_vpc_endpoint" "ec2messages" {
 
 
 resource "aws_vpc_endpoint" "ssmmessages" {
-  vpc_id              = aws_vpc.this.id
+  vpc_id              = aws_vpc.zero_trust_lab.id
   service_name        = "com.amazonaws.eu-west-1.ssmmessages"
   vpc_endpoint_type   = "Interface"
   subnet_ids          = [aws_subnet.private.id]
@@ -169,8 +169,9 @@ resource "aws_vpc_endpoint" "ssmmessages" {
     Name = "${var.project_name}-ssmmessages-endpoint"
   }
 }
+
 resource "aws_vpc_endpoint" "logs" {
-  vpc_id              = aws_vpc.this.id
+  vpc_id              = aws_vpc.zero_trust_lab.id
   service_name        = "com.amazonaws.eu-west-1.logs"
   vpc_endpoint_type   = "Interface"
   subnet_ids          = [aws_subnet.private.id]
@@ -186,7 +187,7 @@ resource "aws_flow_log" "vpc_flow_logs" {
   log_destination      = aws_cloudwatch_log_group.vpc_flow_logs.arn
   log_destination_type = "cloud-watch-logs"
   traffic_type         = "ALL"
-  vpc_id               = aws_vpc.main.id
+  vpc_id               = aws_vpc.zero_trust_lab.id
 }
 
 
