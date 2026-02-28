@@ -181,3 +181,14 @@ resource "aws_vpc_endpoint" "logs" {
     Name = "${var.project_name}-logs-endpoint"
   }
 }
+
+resource "aws_flow_log" "vpc_flow_logs" {
+  log_destination      = aws_cloudwatch_log_group.vpc_flow_logs.arn
+  log_destination_type = "cloud-watch-logs"
+  traffic_type         = "ALL"
+  vpc_id               = aws_vpc.main.id
+}
+
+resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
+  name = "/aws/vpc/flowlogs"
+}
