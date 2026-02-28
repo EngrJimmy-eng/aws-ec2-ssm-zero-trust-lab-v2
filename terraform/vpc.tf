@@ -189,6 +189,4 @@ resource "aws_flow_log" "vpc_flow_logs" {
   vpc_id               = aws_vpc.main.id
 }
 
-resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
-  name = "/aws/vpc/flowlogs"
-}
+
