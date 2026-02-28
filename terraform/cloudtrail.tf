@@ -272,6 +272,18 @@ resource "aws_cloudwatch_metric_alarm" "iam_escalation_alarm" {
   threshold           = 1
 }
 
+resource "aws_cloudwatch_log_metric_filter" "s3_object_access" {
+  name           = "S3ObjectAccess"
+  log_group_name = aws_cloudwatch_log_group.cloudtrail_logs.name
+  pattern        = "{ ($.eventSource = s3.amazonaws.com) && ($.eventName = GetObject) }"
+
+  metric_transformation {
+    name      = "S3ObjectAccess"
+    namespace = "ZeroTrustLab"
+    value     = "1"
+  }
+}
+
 
 
 
